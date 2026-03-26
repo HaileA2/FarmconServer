@@ -32,5 +32,4 @@ async function query(sql, params) {
   }
   return result;
 }
-
 module.exports = { pool, query };

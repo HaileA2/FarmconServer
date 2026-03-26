@@ -5,12 +5,14 @@ const helmet = require('helmet');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
+
 const requestId = require('./middlewares/requestId');
 const errorHandler = require('./middlewares/errorHandler');
 const { apiLimiter } = require('./middlewares/rateLimiter');
 const config = require('./config/env');
 
 const authRouter = require('./modules/auth/router');
+const userRouter = require('./modules/user/router');
 
 const app = express();
 
@@ -38,6 +40,7 @@ app.use('/api', apiLimiter);
 
 // Module routers
 app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
 
 // Health check
 app.get('/health', (req, res) => {
