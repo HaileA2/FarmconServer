@@ -13,6 +13,7 @@ const config = require('./config/env');
 
 const authRouter = require('./modules/auth/router');
 const userRouter = require('./modules/user/router');
+const productRouter = require('./modules/product/router');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use('/api', apiLimiter);
 // Module routers
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
+app.use('/api/products', productRouter);
 
 // Health check
 app.get('/health', (req, res) => {
