@@ -9,7 +9,7 @@ const logger = require('./Utils/logger');
 const PORT = config.server.port;
 
 const server = app.listen(PORT, () => {
-  logger.info({ port: PORT, env: config.server.nodeEnv }, 'FarmConnect server started');
+  logger.info({ port: PORT, env: config.server.nodeEnv }, 'FarmConnect  successfully');
 });
 
 process.on('unhandledRejection', (reason, promise) => {

@@ -1,13 +1,9 @@
 # Requirements Document
-
 ## Introduction
 
 FarmConnect is a digital agricultural marketplace backend built with Node.js/Express and PostgreSQL. It exposes a RESTful API that connects farmers, buyers, administrators, and transporters. The backend handles user authentication, product management, order processing, payment integration (Telebirr and Chapa), market analytics, and notifications. All requirements below are backend/API-level only.
-
 ---
-
 ## Glossary
-
 - **Auth_Service**: The authentication and authorization module responsible for registration, login, token issuance, and RBAC enforcement.
 - **User_Service**: The user profile management module.
 - **Product_Service**: The module responsible for product listing, inventory, and search.
@@ -31,7 +27,8 @@ FarmConnect is a digital agricultural marketplace backend built with Node.js/Exp
 
 ---
 
-## Requirements
+- **FCM**: Firebase Cloud Messaging service used for push notification delivery.
+- **Recommendation_Service**: The module responsible for computing and serving personalized product recommendations to buyers using rule-based weighted scoring across order history, search history, and product popularity signals.
 
 ### Requirement 1: User Registration
 
@@ -232,3 +229,27 @@ FarmConnect is a digital agricultural marketplace backend built with Node.js/Exp
 8. WHEN a database query for a paginated list endpoint exceeds 500ms, THE Repository SHALL log a slow-query warning including the query identifier and duration.
 9. THE Product_Service SHALL respond to product listing requests within 200ms for cached results and within 800ms for uncached results under normal load.
 10. THE System SHALL support horizontal scaling by maintaining no server-side session state, relying exclusively on JWT and Redis for session and cache management.
+
+---
+
+### Requirement 14: AI Product Recommendation System
+
+**User Story:** As a buyer, I want to receive personalized product recommendations based on my search history, previous orders, and platform-wide popularity, so that I can discover relevant agricultural products without manually searching.
+
+#### Acceptance Criteria
+
+1. WHEN a GET request is made to `/api/recommendations` by an authenticated buyer, THE Recommendation_Service SHALL return a list of up to 10 recommended products ordered by relevance score descending.
+2. THE Recommendation_Service SHALL compute relevance scores using a rule-based weighted algorithm combining three signals:
+   - **Order history signal**: products in the same category as the buyer's previously ordered products (weight: 0.5)
+   - **Search history signal**: products matching keywords from the buyer's recent search queries (weight: 0.3)
+   - **Popularity signal**: products with the highest order count platform-wide in the last 30 days (weight: 0.2)
+3. WHEN a buyer has no order history and no search history, THE Recommendation_Service SHALL fall back to returning the top 10 most-ordered products platform-wide in the last 30 days.
+4. THE Recommendation_Service SHALL exclude products that are `out_of_stock` or soft-deleted from all recommendation results.
+5. THE Recommendation_Service SHALL exclude products the buyer has already ordered from recommendation results.
+6. WHEN a buyer performs a product search via `/api/products?search=<keyword>`, THE Recommendation_Service SHALL record the search keyword against the buyer's `user_id` in a `search_history` table with a `searched_at` timestamp.
+7. THE Recommendation_Service SHALL only consider search history entries from the last 30 days when computing the search history signal.
+8. THE Recommendation_Service SHALL cache recommendation results per buyer in Redis_Cache with a TTL of 30 minutes.
+9. WHEN a buyer places a new order or performs a new search, THE Recommendation_Service SHALL invalidate that buyer's cached recommendation result.
+10. WHEN a GET request is made to `/api/analytics/dashboard` by a buyer, THE Analytics_Service SHALL include a `recommended_products` field in the response containing the output of the Recommendation_Service for that buyer.
+11. THE Repository SHALL maintain a `search_history` table with columns: `id` (PK), `user_id` (FK), `keyword` (VARCHAR 255), `searched_at` (TIMESTAMP).
+12. THE Repository SHALL maintain a `product_popularity` view or materialized query that aggregates order counts per product over a rolling 30-day window to support the popularity signal.
