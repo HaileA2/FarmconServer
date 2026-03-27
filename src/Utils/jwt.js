@@ -1,5 +1,4 @@
 'use strict';
-
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const config = require('../config/env');
