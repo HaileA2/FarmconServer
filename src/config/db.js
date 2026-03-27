@@ -12,11 +12,13 @@ const pool = new Pool({
   password: config.db.password,
   max: config.db.poolMax,
 });
-
 pool.on('error', (err) => {
   logger.error({ err }, 'Unexpected PostgreSQL pool error');
 });
 
+//tempo log
+console.log("DB USER:", config.db.user);
+console.log("DB PASSWORD:", config.db.password);
 /**
  * Execute a parameterized query with slow-query logging.
  * @param {string} sql

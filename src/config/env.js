@@ -17,7 +17,7 @@ const config = {
     host: optional('DB_HOST', 'localhost'),
     port: parseInt(optional('DB_PORT', '5432'), 10),
     name: optional('DB_NAME', 'farmconnect'),
-    user: optional('DB_USER', 'postgres'),
+    user: optional('DB_USER', 'haile'),
     password: optional('DB_PASSWORD', ''),
     poolMax: parseInt(optional('DB_POOL_MAX', '10'), 10),
   },
