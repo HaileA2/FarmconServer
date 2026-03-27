@@ -53,15 +53,15 @@ async function findAll(filters = {}) {
 
   if (filters.status) {
     values.push(filters.status);
-    conditions.push(`o.status = $${values.length}`);
+    conditions.push('o.status = $' + values.length);
   }
 
-  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
-  const sql = `SELECT o.*, p.title AS product_title
-               FROM orders o
-               JOIN products p ON p.product_id = o.product_id
-               ${where}
-               ORDER BY o.created_at DESC`;
+  const where = conditions.length ? 'WHERE ' + conditions.join(' AND ') : '';
+  const sql = 'SELECT o.*, p.title AS product_title ' +
+              'FROM orders o ' +
+              'JOIN products p ON p.product_id = o.product_id ' +
+              where + ' ' +
+              'ORDER BY o.created_at DESC';
   const result = await query(sql, values);
   return result.rows;
 }

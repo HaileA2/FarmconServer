@@ -16,6 +16,7 @@ const userRouter = require('./modules/user/router');
 const productRouter = require('./modules/product/router');
 const notificationRouter = require('./modules/notification/router');
 const orderRouter = require('./modules/order/router');
+const transportRouter = require('./modules/transport/router');
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use('/api/users', userRouter);
 app.use('/api/products', productRouter);
 app.use('/api/notifications', notificationRouter);
 app.use('/api/orders', orderRouter);
+app.use('/api/transport', transportRouter);
 
 // Health check
 app.get('/health', (req, res) => {
