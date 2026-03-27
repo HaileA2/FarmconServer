@@ -4,9 +4,8 @@ const { query } = require('../../config/db');
 
 async function createPayment({ order_id, buyer_id, payment_method, amount, transaction_ref }) {
   const result = await query(
-    `INSERT INTO payments (order_id, buyer_id, payment_method, amount, transaction_ref)
-     VALUES ($1, $2, $3, $4, $5)
-     RETURNING *`,
+    'INSERT INTO payments (order_id, buyer_id, payment_method, amount, transaction_ref) ' +
+    'VALUES ($1, $2, $3, $4, $5) RETURNING *',
     [order_id, buyer_id, payment_method, amount, transaction_ref]
   );
   return result.rows[0];
@@ -30,11 +29,10 @@ async function findByOrder(order_id) {
 
 async function findByBuyer(buyer_id) {
   const result = await query(
-    `SELECT p.*, o.status AS order_status
-     FROM payments p
-     JOIN orders o ON o.order_id = p.order_id
-     WHERE p.buyer_id = $1
-     ORDER BY p.created_at DESC`,
+    'SELECT p.*, o.status AS order_status ' +
+    'FROM payments p ' +
+    'JOIN orders o ON o.order_id = p.order_id ' +
+    'WHERE p.buyer_id = $1 ORDER BY p.created_at DESC',
     [buyer_id]
   );
   return result.rows;
@@ -50,10 +48,8 @@ async function findByTransactionRef(transaction_ref) {
 
 async function updatePaymentStatus(payment_id, payment_status, gateway_ref) {
   const result = await query(
-    `UPDATE payments
-     SET payment_status = $2, gateway_ref = $3, updated_at = NOW()
-     WHERE payment_id = $1
-     RETURNING *`,
+    'UPDATE payments SET payment_status = $2, gateway_ref = $3, updated_at = NOW() ' +
+    'WHERE payment_id = $1 RETURNING *',
     [payment_id, payment_status, gateway_ref || null]
   );
   return result.rows[0];
